@@ -12,6 +12,7 @@ use Ramsey\Uuid\UuidInterface;
  */
 abstract class Event
 {
+    use Device;
     use Timing;
     use User;
 

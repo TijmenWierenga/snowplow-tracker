@@ -54,6 +54,9 @@ class Payload implements JsonSerializable
             'vid' => $this->event->sessionIdIndex,
             'ip' => $this->event->ipAddress,
 
+            // Device parameters
+            'res' => (string) $this->event->screenResolution,
+
             // Event parameters
             ...$this->mapEventSpecificFields()
         ]);
