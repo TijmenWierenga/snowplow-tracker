@@ -9,7 +9,6 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use TijmenWierenga\SnowplowTracker\Emitters\DebugEmitter;
 use TijmenWierenga\SnowplowTracker\Emitters\HttpClientEmitter;
-use TijmenWierenga\SnowplowTracker\Emitters\Payload;
 use TijmenWierenga\SnowplowTracker\Events\Event;
 use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
 use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
