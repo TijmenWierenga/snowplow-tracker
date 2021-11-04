@@ -9,7 +9,7 @@ use Stringable;
 /**
  * @author Tijmen Wierenga <tijmen.wierenga@persgroep.net>
  */
-final class ScreenResolution implements Stringable
+final class ScreenDimensions implements Stringable
 {
     /**
      * @psalm-param positive-int $width
@@ -21,8 +21,13 @@ final class ScreenResolution implements Stringable
     ) {
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->width . 'x' . $this->height;
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 }

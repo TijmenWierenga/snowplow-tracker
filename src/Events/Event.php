@@ -15,6 +15,7 @@ abstract class Event
     use Device;
     use Timing;
     use User;
+    use Web;
 
     private UuidInterface $id;
 

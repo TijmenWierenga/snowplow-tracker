@@ -27,39 +27,62 @@ class Payload implements JsonSerializable
 
     public function asArray(): array
     {
-        return array_filter([
-            // Common parameters
-            'tna' => $this->trackerConfig->trackerName,
-            'aid' => $this->trackerConfig->appId,
-            'p' => $this->trackerConfig->platform->value,
+        return array_filter(
+            [
+                // Common parameters
+                'tna' => $this->trackerConfig->trackerName,
+                'aid' => $this->trackerConfig->appId,
+                'p' => $this->trackerConfig->platform->value,
 
-            // Timing parameters
-            'dtm' => $this->event->occuredAtClientDevice?->format(self::TIMESTAMP_IN_MILLISECONDS),
-            'stm' => $this->sentToCollector->format(self::TIMESTAMP_IN_MILLISECONDS),
-            'ttm' => $this->event->occuredAt?->format(self::TIMESTAMP_IN_MILLISECONDS),
-            'tz' => $this->event->timeZone?->getName(),
+                // Timing parameters
+                'dtm' => $this->event->occuredAtClientDevice?->format(self::TIMESTAMP_IN_MILLISECONDS),
+                'stm' => $this->sentToCollector->format(self::TIMESTAMP_IN_MILLISECONDS),
+                'ttm' => $this->event->occuredAt?->format(self::TIMESTAMP_IN_MILLISECONDS),
+                'tz' => $this->event->timeZone?->getName(),
 
-            // Event parameters
-            'e' => $this->event->getType()->value,
-            'eid' => $this->event->getId()->toString(),
+                // Event parameters
+                'e' => $this->event->getType()->value,
+                'eid' => $this->event->getId()->toString(),
 
-            // Tracker version
-            'tv' => $this->trackerConfig->getTrackerVersion(),
+                // Tracker version
+                'tv' => $this->trackerConfig->getTrackerVersion(),
 
-            // User parameters
-            'duid' => $this->event->domainUserId,
-            'tnuid' => $this->event->networkUserId,
-            'uid' => $this->event->userId,
-            'sid' => $this->event->sessionId,
-            'vid' => $this->event->sessionIdIndex,
-            'ip' => $this->event->ipAddress,
+                // User parameters
+                'duid' => $this->event->domainUserId,
+                'tnuid' => $this->event->networkUserId,
+                'uid' => $this->event->userId,
+                'sid' => $this->event->sessionId,
+                'vid' => $this->event->sessionIdIndex,
+                'ip' => $this->event->ipAddress,
 
-            // Device parameters
-            'res' => (string) $this->event->screenResolution,
+                // Device parameters
+                'res' => $this->event->screenResolution?->toString(),
 
-            // Event parameters
-            ...$this->mapEventSpecificFields()
-        ]);
+                // Web parameters
+                'url' => $this->event->url,
+                'ua' => $this->event->userAgent,
+                'page' => $this->event->pageTitle,
+                'refr' => $this->event->referrer,
+                'fp' => $this->event->userFingerprint,
+                'cookie' => $this->event->permitsCookies,
+                'lang' => $this->event->browserLanguage,
+                'f_pdf' => $this->event->adobePdfPluginInstalled,
+                'f_qt' => $this->event->quicktimePluginInstalled,
+                'f_realp' => $this->event->realplayerInstalled,
+                'f_wma' => $this->event->windowsMediaPluginInstalled,
+                'f_dir' => $this->event->directorPluginInstalled,
+                'f_fla' => $this->event->flashPluginInstalled,
+                'f_gears' => $this->event->googleGearsPluginInstalled,
+                'f_ag' => $this->event->silverlightPluginInstalled,
+                'cd' => $this->event->browserColorDept,
+                'ds' => $this->event->webPageDimensions?->toString(),
+                'cs' => $this->event->characterEncoding,
+                'vp' => $this->event->browserViewportDimensions?->toString(),
+
+                // Event parameters
+                ...$this->mapEventSpecificFields()
+            ]
+        );
     }
 
     public function jsonSerialize(): array

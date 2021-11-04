@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace TijmenWierenga\SnowplowTracker\Events;
 
-use TijmenWierenga\SnowplowTracker\Events\ValueObjects\ScreenResolution;
+use TijmenWierenga\SnowplowTracker\Events\ValueObjects\ScreenDimensions;
 
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
 trait Device
 {
-    public ?ScreenResolution $screenResolution = null;
+    public ?ScreenDimensions $screenResolution = null;
 }
