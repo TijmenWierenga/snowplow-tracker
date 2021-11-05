@@ -8,7 +8,7 @@ use Ramsey\Uuid\Nonstandard\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * @author Tijmen Wierenga <tijmen.wierenga@live.nl>
+ * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
 abstract class Event
 {

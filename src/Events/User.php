@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TijmenWierenga\SnowplowTracker\Events;
 
 /**
- * @author Tijmen Wierenga <tijmen.wierenga@persgroep.net>
+ * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
 trait User
 {

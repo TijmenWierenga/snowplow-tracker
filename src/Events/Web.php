@@ -7,7 +7,7 @@ namespace TijmenWierenga\SnowplowTracker\Events;
 use TijmenWierenga\SnowplowTracker\Events\ValueObjects\ScreenDimensions;
 
 /**
- * @author Tijmen Wierenga <tijmen.wierenga@persgroep.net>
+ * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
 trait Web
 {

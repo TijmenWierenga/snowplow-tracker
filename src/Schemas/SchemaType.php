@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TijmenWierenga\SnowplowTracker\Schemas;
 
 /**
- * @author Tijmen Wierenga <tijmen.wierenga@persgroep.net>
+ * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
 enum SchemaType: string
 {

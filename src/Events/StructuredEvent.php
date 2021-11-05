@@ -7,7 +7,7 @@ namespace TijmenWierenga\SnowplowTracker\Events;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * @author Tijmen Wierenga <tijmen.wierenga@live.nl>
+ * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
 class StructuredEvent extends Event
 {

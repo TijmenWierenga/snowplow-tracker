@@ -13,7 +13,7 @@ use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
 use TijmenWierenga\SnowplowTracker\Support\Filters\ExcludeNull;
 
 /**
- * @author Tijmen Wierenga <tijmen.wierenga@live.nl>
+ * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
 class Payload implements JsonSerializable
 {

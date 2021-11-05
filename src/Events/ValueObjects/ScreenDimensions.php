@@ -7,7 +7,7 @@ namespace TijmenWierenga\SnowplowTracker\Events\ValueObjects;
 use Stringable;
 
 /**
- * @author Tijmen Wierenga <tijmen.wierenga@persgroep.net>
+ * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
 final class ScreenDimensions implements Stringable
 {

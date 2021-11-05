@@ -17,7 +17,7 @@ use TijmenWierenga\SnowplowTracker\Schemas\Version;
 use TijmenWierenga\SnowplowTracker\Tracker;
 
 /**
- * @author Tijmen Wierenga <tijmen.wierenga@persgroep.net>
+ * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
 final class TrackerTest extends TestCase
 {

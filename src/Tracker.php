@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TijmenWierenga\SnowplowTracker;
 
-use TijmenWierenga\SnowplowTracker\Config\Platform;
 use TijmenWierenga\SnowplowTracker\Config\TrackerConfig;
 use TijmenWierenga\SnowplowTracker\Emitters\Emitter;
 use TijmenWierenga\SnowplowTracker\Emitters\Payload;
@@ -13,7 +12,7 @@ use TijmenWierenga\SnowplowTracker\Support\Clock;
 use TijmenWierenga\SnowplowTracker\Support\SystemClock;
 
 /**
- * @author Tijmen Wierenga <tijmen.wierenga@live.nl>
+ * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
 class Tracker
 {

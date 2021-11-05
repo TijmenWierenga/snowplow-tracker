@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TijmenWierenga\SnowplowTracker\Emitters;
 
 /**
- * @author Tijmen Wierenga <tijmen.wierenga@live.nl>
+ * @author Tijmen Wierenga <t.wierenga@live.nl>
  *
  * Emits the event to a Snowplow collector URI
  */
