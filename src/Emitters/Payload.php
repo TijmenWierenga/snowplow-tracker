@@ -10,13 +10,14 @@ use TijmenWierenga\SnowplowTracker\Config\TrackerConfig;
 use TijmenWierenga\SnowplowTracker\Events\Event;
 use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
 use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
+use TijmenWierenga\SnowplowTracker\Support\Filters\ExcludeNull;
 
 /**
  * @author Tijmen Wierenga <tijmen.wierenga@live.nl>
  */
 class Payload implements JsonSerializable
 {
-    private const TIMESTAMP_IN_MILLISECONDS = 'Uv';
+    public const TIMESTAMP_IN_MILLISECONDS = 'Uv';
 
     public function __construct(
         public readonly TrackerConfig $trackerConfig,
@@ -81,7 +82,8 @@ class Payload implements JsonSerializable
 
                 // Event parameters
                 ...$this->mapEventSpecificFields()
-            ]
+            ],
+            new ExcludeNull()
         );
     }
 
