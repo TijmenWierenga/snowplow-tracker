@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TijmenWierenga\SnowplowTracker\Support;
+namespace TijmenWierenga\SnowplowTracker\Support\Time;
 
 use DateTimeImmutable;
 

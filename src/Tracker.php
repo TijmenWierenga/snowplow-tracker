@@ -8,8 +8,8 @@ use TijmenWierenga\SnowplowTracker\Config\TrackerConfig;
 use TijmenWierenga\SnowplowTracker\Emitters\Emitter;
 use TijmenWierenga\SnowplowTracker\Emitters\Payload;
 use TijmenWierenga\SnowplowTracker\Events\Event;
-use TijmenWierenga\SnowplowTracker\Support\Clock;
-use TijmenWierenga\SnowplowTracker\Support\SystemClock;
+use TijmenWierenga\SnowplowTracker\Support\Time\Clock;
+use TijmenWierenga\SnowplowTracker\Support\Time\SystemClock;
 
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
