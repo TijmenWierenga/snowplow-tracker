@@ -9,7 +9,7 @@ use DateTimeImmutable;
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
-class SystemClock implements Clock
+final class SystemClock implements Clock
 {
     public function now(): DateTimeImmutable
     {

@@ -9,7 +9,7 @@ use Stringable;
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
-class Schema implements Stringable
+final class Schema implements Stringable
 {
     public function __construct(
         public readonly string $vendor,

@@ -9,7 +9,7 @@ use Stringable;
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
-class Version implements Stringable
+final class Version implements Stringable
 {
     public function __construct(
         public readonly int $major,

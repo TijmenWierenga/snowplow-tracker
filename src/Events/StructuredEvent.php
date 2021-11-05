@@ -9,7 +9,7 @@ use Ramsey\Uuid\UuidInterface;
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
-class StructuredEvent extends Event
+final class StructuredEvent extends Event
 {
     public function __construct(
         public string $category,

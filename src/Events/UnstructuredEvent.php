@@ -11,7 +11,7 @@ use TijmenWierenga\SnowplowTracker\Schemas\Schema;
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
-class UnstructuredEvent extends Event
+final class UnstructuredEvent extends Event
 {
     public function __construct(
         public readonly Schema $schema,

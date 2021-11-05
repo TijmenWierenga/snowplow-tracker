@@ -14,7 +14,7 @@ use TijmenWierenga\SnowplowTracker\Support\Time\SystemClock;
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
-class Tracker
+final class Tracker
 {
     /**
      * @param array<array-key, callable(Event): Event> $middleware

@@ -9,7 +9,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
-class HttpClientEmitter implements Emitter
+final class HttpClientEmitter implements Emitter
 {
     private const POST_EVENT_URL = '/com.snowplowanalytics.snowplow/tp2';
     private const CURRENT_JSON_SCHEMA = 'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-4';

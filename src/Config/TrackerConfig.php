@@ -7,7 +7,7 @@ namespace TijmenWierenga\SnowplowTracker\Config;
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
-class TrackerConfig
+final class TrackerConfig
 {
     public function __construct(
         public readonly Platform $platform = Platform::SERVER_SIDE_APP,

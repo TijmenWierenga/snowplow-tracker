@@ -17,9 +17,9 @@ use TijmenWierenga\SnowplowTracker\Support\Filters\ExcludeNull;
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  */
-class Payload implements JsonSerializable
+final class Payload implements JsonSerializable
 {
-    public const TIMESTAMP_IN_MILLISECONDS = 'Uv';
+    final public const TIMESTAMP_IN_MILLISECONDS = 'Uv';
 
     public function __construct(
         public readonly TrackerConfig $trackerConfig,
