@@ -13,6 +13,7 @@ use Ramsey\Uuid\UuidInterface;
 abstract class Event
 {
     use Device;
+    use IoT;
     use Timing;
     use User;
     use Web;
