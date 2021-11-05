@@ -10,7 +10,7 @@ namespace TijmenWierenga\SnowplowTracker\Config;
 class TrackerConfig
 {
     public function __construct(
-        public readonly Platform $platform,
+        public readonly Platform $platform = Platform::SERVER_SIDE_APP,
         public readonly ?string $trackerName = null,
         public readonly ?string $appId = null,
     ) {

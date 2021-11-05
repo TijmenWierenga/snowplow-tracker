@@ -23,7 +23,7 @@ class Tracker
     public function __construct(
         private readonly Emitter $emitter,
         private readonly array $middleware = [],
-        private readonly TrackerConfig $config = new TrackerConfig(Platform::SERVER_SIDE_APP),
+        private readonly TrackerConfig $config = new TrackerConfig(),
         private readonly Clock $clock = new SystemClock()
     ) {
     }
