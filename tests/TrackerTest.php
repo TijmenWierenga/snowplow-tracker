@@ -10,6 +10,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use TijmenWierenga\SnowplowTracker\Emitters\DebugEmitter;
 use TijmenWierenga\SnowplowTracker\Emitters\HttpClientEmitter;
 use TijmenWierenga\SnowplowTracker\Events\Event;
+use TijmenWierenga\SnowplowTracker\Events\Pageview;
 use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
 use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
 use TijmenWierenga\SnowplowTracker\Schemas\Schema;
@@ -70,6 +71,34 @@ final class TrackerTest extends TestCase
         );
 
         // Then I expect the event to be successfully inserted
+        /** @var array{good: int, bad: int, all: int} $events */
+        $events = json_decode(
+            $httpClient->request('GET', '/micro/all')->getContent(true),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        self::assertEquals(1, $events['good']);
+    }
+
+    public function testItShouldTrackAPageview(): void
+    {
+        // Given I have a tracker
+        $httpClient = $this->createSnowplowMicroClient();
+        $emitter = new HttpClientEmitter($httpClient);
+        $tracker = new Tracker($emitter);
+
+        // When I track a pageview
+        $tracker->track(
+            new Pageview(
+                'https://github.com/TijmenWierenga',
+                'My personal Github account',
+                'https://twitter.com/TijmenWierenga'
+            )
+        );
+
+        // Then I expect the event to be inserted successfully
         /** @var array{good: int, bad: int, all: int} $events */
         $events = json_decode(
             $httpClient->request('GET', '/micro/all')->getContent(true),

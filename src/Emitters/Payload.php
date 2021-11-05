@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use JsonSerializable;
 use TijmenWierenga\SnowplowTracker\Config\TrackerConfig;
 use TijmenWierenga\SnowplowTracker\Events\Event;
+use TijmenWierenga\SnowplowTracker\Events\Pageview;
 use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
 use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
 use TijmenWierenga\SnowplowTracker\Support\Filters\ExcludeNull;
@@ -80,6 +81,9 @@ class Payload implements JsonSerializable
                 'cs' => $this->event->characterEncoding,
                 'vp' => $this->event->browserViewportDimensions?->toString(),
 
+                // Internet of Things parameters
+                'mac' => $this->event->macAddress,
+
                 // Event parameters
                 ...$this->mapEventSpecificFields()
             ],
@@ -114,6 +118,7 @@ class Payload implements JsonSerializable
                     JSON_THROW_ON_ERROR
                 )
             ],
+            $this->event instanceof Pageview => []
         };
     }
 }
