@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use JsonSerializable;
 use TijmenWierenga\SnowplowTracker\Config\TrackerConfig;
 use TijmenWierenga\SnowplowTracker\Events\Event;
+use TijmenWierenga\SnowplowTracker\Events\PagePing;
 use TijmenWierenga\SnowplowTracker\Events\Pageview;
 use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
 use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
@@ -118,7 +119,13 @@ class Payload implements JsonSerializable
                     JSON_THROW_ON_ERROR
                 )
             ],
-            $this->event instanceof Pageview => []
+            $this->event instanceof Pageview => [],
+            $this->event instanceof PagePing => [
+                'pp_mix' => (string) $this->event->minimumHorizontalOffset,
+                'pp_max' => (string) $this->event->maximumHorizontalOffset,
+                'pp_miy' => (string) $this->event->minimumVerticalOffset,
+                'pp_may' => (string) $this->event->maximumVerticalOffset,
+            ]
         };
     }
 }
