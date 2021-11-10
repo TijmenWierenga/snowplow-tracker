@@ -9,10 +9,12 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use TijmenWierenga\SnowplowTracker\Emitters\DebugEmitter;
 use TijmenWierenga\SnowplowTracker\Emitters\HttpClientEmitter;
+use TijmenWierenga\SnowplowTracker\Events\EcommerceTransaction;
 use TijmenWierenga\SnowplowTracker\Events\Event;
 use TijmenWierenga\SnowplowTracker\Events\PagePing;
 use TijmenWierenga\SnowplowTracker\Events\Pageview;
 use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
+use TijmenWierenga\SnowplowTracker\Events\TransactionItem;
 use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
 use TijmenWierenga\SnowplowTracker\Schemas\Schema;
 use TijmenWierenga\SnowplowTracker\Schemas\Version;
@@ -120,6 +122,68 @@ final class TrackerTest extends TestCase
 
         // When I track a pageview
         $tracker->track(new PagePing(0, 100, 50, 250));
+
+        // Then I expect the event to be inserted successfully
+        /** @var array{good: int, bad: int, all: int} $events */
+        $events = json_decode(
+            $httpClient->request('GET', '/micro/all')->getContent(true),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        self::assertEquals(1, $events['good']);
+    }
+
+    public function testItShouldTrackAnEcommerceTransaction(): void
+    {
+        // Given I have a tracker
+        $httpClient = $this->createSnowplowMicroClient();
+        $emitter = new HttpClientEmitter($httpClient);
+        $tracker = new Tracker($emitter);
+
+        // When I track an Ecommerce transaction
+        $tracker->track(new EcommerceTransaction(
+            '6d69fc0c-8144-4a9e-a503-88da693f17a3',
+            89.95,
+            'EUR',
+            'My Affiliation',
+            3.50,
+            4.95,
+            'Amsterdam',
+            'Noord-Holland',
+            'Netherlands'
+        ));
+
+        // Then I expect the event to be inserted successfully
+        /** @var array{good: int, bad: int, all: int} $events */
+        $events = json_decode(
+            $httpClient->request('GET', '/micro/all')->getContent(true),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        self::assertEquals(1, $events['good']);
+    }
+
+    public function testItShouldTrackATransactionItem(): void
+    {
+        // Given I have a tracker
+        $httpClient = $this->createSnowplowMicroClient();
+        $emitter = new HttpClientEmitter($httpClient);
+        $tracker = new Tracker($emitter);
+
+        // When I track an Ecommerce transaction
+        $tracker->track(new TransactionItem(
+            '6d69fc0c-8144-4a9e-a503-88da693f17a3',
+            '580b9f55-f8d0-405a-93d4-56b4bf64d76b',
+            50.05,
+            4,
+            'EUR',
+            'Apple iPhone 13',
+            'Smartphones'
+        ));
 
         // Then I expect the event to be inserted successfully
         /** @var array{good: int, bad: int, all: int} $events */

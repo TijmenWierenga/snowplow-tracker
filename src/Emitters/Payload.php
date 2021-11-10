@@ -7,10 +7,12 @@ namespace TijmenWierenga\SnowplowTracker\Emitters;
 use DateTimeImmutable;
 use JsonSerializable;
 use TijmenWierenga\SnowplowTracker\Config\TrackerConfig;
+use TijmenWierenga\SnowplowTracker\Events\EcommerceTransaction;
 use TijmenWierenga\SnowplowTracker\Events\Event;
 use TijmenWierenga\SnowplowTracker\Events\PagePing;
 use TijmenWierenga\SnowplowTracker\Events\Pageview;
 use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
+use TijmenWierenga\SnowplowTracker\Events\TransactionItem;
 use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
 use TijmenWierenga\SnowplowTracker\Support\Filters\ExcludeNull;
 
@@ -125,7 +127,27 @@ final class Payload implements JsonSerializable
                 'pp_max' => (string) $this->event->maximumHorizontalOffset,
                 'pp_miy' => (string) $this->event->minimumVerticalOffset,
                 'pp_may' => (string) $this->event->maximumVerticalOffset,
-            ]
+            ],
+            $this->event instanceof EcommerceTransaction => [
+                'tr_id' => $this->event->orderId,
+                'tr_af' => $this->event->affiliation,
+                'tr_tt' => (string) $this->event->totalValue,
+                'tr_tx' => (string) $this->event->taxValue,
+                'tr_sh' => (string) $this->event->deliveryCosts,
+                'tr_ci' => $this->event->deliveryCity,
+                'tr_st' => $this->event->deliveryState,
+                'tr_co' => $this->event->deliveryCountry,
+                'tr_cu' => $this->event->currency,
+            ],
+            $this->event instanceof TransactionItem => [
+                'ti_id' => $this->event->orderId,
+                'ti_sk' => $this->event->sku,
+                'ti_nm' => $this->event->name,
+                'ti_ca' => $this->event->category,
+                'ti_pr' => (string) $this->event->price,
+                'ti_qu' => (string) $this->event->quantity,
+                'ti_cu' => $this->event->currency
+            ],
         };
     }
 }
