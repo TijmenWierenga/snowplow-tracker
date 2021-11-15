@@ -18,7 +18,9 @@ abstract class Event
     use User;
     use Web;
 
-    private UuidInterface $id;
+    public readonly UuidInterface $id;
+    /** @var array<array-key, Schemable> */
+    private array $contexts = [];
 
     protected function __construct(
         ?UuidInterface $id = null
@@ -28,8 +30,13 @@ abstract class Event
 
     abstract public function getType(): EventType;
 
-    public function getId(): UuidInterface
+    public function addContext(Schemable $context): void
     {
-        return $this->id;
+        $this->contexts[] = $context;
+    }
+
+    public function getContexts(): array
+    {
+        return $this->contexts;
     }
 }

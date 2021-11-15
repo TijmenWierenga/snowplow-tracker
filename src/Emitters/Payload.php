@@ -11,6 +11,7 @@ use TijmenWierenga\SnowplowTracker\Events\EcommerceTransaction;
 use TijmenWierenga\SnowplowTracker\Events\Event;
 use TijmenWierenga\SnowplowTracker\Events\PagePing;
 use TijmenWierenga\SnowplowTracker\Events\Pageview;
+use TijmenWierenga\SnowplowTracker\Events\Schemable;
 use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
 use TijmenWierenga\SnowplowTracker\Events\TransactionItem;
 use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
@@ -47,7 +48,7 @@ final class Payload implements JsonSerializable
 
                 // Event parameters
                 'e' => $this->event->getType()->value,
-                'eid' => $this->event->getId()->toString(),
+                'eid' => $this->event->id->toString(),
 
                 // Tracker version
                 'tv' => $this->trackerConfig->getTrackerVersion(),
@@ -87,6 +88,9 @@ final class Payload implements JsonSerializable
                 // Internet of Things parameters
                 'mac' => $this->event->macAddress,
 
+                // Custom context
+                'cx' => $this->mapCustomContext(),
+
                 // Event parameters
                 ...$this->mapEventSpecificFields()
             ],
@@ -110,15 +114,17 @@ final class Payload implements JsonSerializable
                 'se_va' => $this->event->value
             ],
             $this->event instanceof UnstructuredEvent => [
-                'ue_pr' => json_encode(
-                    [
-                        'schema' => 'iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0',
-                        'data' => [
-                            'schema' => (string) $this->event->schema,
-                            'data' => $this->event->data,
-                        ]
-                    ],
-                    JSON_THROW_ON_ERROR
+                'ue_px' => base64_encode(
+                    json_encode(
+                        [
+                            'schema' => 'iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0',
+                            'data' => [
+                                'schema' => (string) $this->event->schema,
+                                'data' => $this->event->data,
+                            ]
+                        ],
+                        JSON_THROW_ON_ERROR
+                    )
                 )
             ],
             $this->event instanceof Pageview => [],
@@ -149,5 +155,27 @@ final class Payload implements JsonSerializable
                 'ti_cu' => $this->event->currency
             ],
         };
+    }
+
+    private function mapCustomContext(): ?string
+    {
+        $contexts = $this->event->getContexts();
+
+        if (empty($contexts)) {
+            return null;
+        }
+
+        $schema = [
+            'schema' => 'iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-1',
+            'data' => array_map(
+                static fn (Schemable $context): array => [
+                    'schema' => (string) $context->getSchema(),
+                    'data' => $context->getData()
+                ],
+                $this->event->getContexts()
+            )
+        ];
+
+        return base64_encode(json_encode($schema, JSON_THROW_ON_ERROR));
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TijmenWierenga\Tests\SnowplowTrackers;
 
+use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -13,6 +14,7 @@ use TijmenWierenga\SnowplowTracker\Events\EcommerceTransaction;
 use TijmenWierenga\SnowplowTracker\Events\Event;
 use TijmenWierenga\SnowplowTracker\Events\PagePing;
 use TijmenWierenga\SnowplowTracker\Events\Pageview;
+use TijmenWierenga\SnowplowTracker\Events\Schemable;
 use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
 use TijmenWierenga\SnowplowTracker\Events\TransactionItem;
 use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
@@ -225,6 +227,46 @@ final class TrackerTest extends TestCase
         $payload = $emitter->getLatestPayload();
         self::assertEquals('t.wierenga@live.nl', $payload->event->userId);
         self::assertEquals('707ac2fb-b4a8-422b-9f58-41e1fa79ce5a', $payload->event->sessionId);
+    }
+
+    public function testItShouldAddCustomContext(): void
+    {
+        // Given I have a tracker
+        $httpClient = $this->createSnowplowMicroClient();
+        $emitter = new HttpClientEmitter($httpClient);
+        $tracker = new Tracker($emitter);
+
+        // When I track an event with custom context
+        $event = new StructuredEvent('my-category', 'my-action');
+        $event->addContext(
+            new class () implements Schemable {
+                public function getSchema(): Schema
+                {
+                    return new Schema('com.snowplowanalytics.snowplow', 'timing', new Version(1, 0, 0));
+                }
+
+                public function getData(): array|string|int|float|bool|JsonSerializable
+                {
+                    return [
+                        'category' => 'demo',
+                        'variable' => 'duration',
+                        'timing' => 145
+                    ];
+                }
+            }
+        );
+        $tracker->track($event);
+
+        // Then I expect the event to be inserted successfully
+        /** @var array{good: int, bad: int, all: int} $events */
+        $events = json_decode(
+            $httpClient->request('GET', '/micro/all')->getContent(true),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        self::assertEquals(1, $events['good']);
     }
 
     private function createSnowplowMicroClient(): HttpClientInterface
