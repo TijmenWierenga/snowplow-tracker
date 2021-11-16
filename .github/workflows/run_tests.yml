@@ -1,0 +1,31 @@
+name: run-tests
+
+on: push
+
+jobs:
+  code-style:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [8.1.0RC6]
+        dependency-version: [prefer-lowest, prefer-stable]
+
+    name: php-${{ matrix.php }} composer-${{ matrix.dependency-version }}
+
+    steps:
+      - name: Update apt
+        run: sudo apt-get update --fix-missing
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+      - name: Install dependencies
+        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+      - name: Start stack
+        run: PHP_VERSION=${{ matrix.php }} docker-compose up -d
+      - name: Wait
+        run: sleep 5
+      - name: Run tests
+        run: docker-compose run --rm php vendor/bin/phpunit
