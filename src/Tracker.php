@@ -39,4 +39,9 @@ final class Tracker
         // Send to collector
         $this->emitter->send($payload);
     }
+
+    private function test()
+    {
+        
+    }
 }
