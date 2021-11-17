@@ -111,7 +111,7 @@ final class Payload implements JsonSerializable
                 'se_ac' => $this->event->action,
                 'se_la' => $this->event->label,
                 'se_pr' => $this->event->property,
-                'se_va' => $this->event->value
+                'se_va' => is_numeric($this->event->value) ? (string) $this->event->value : $this->event->value
             ],
             $this->event instanceof UnstructuredEvent => [
                 'ue_px' => base64_encode(

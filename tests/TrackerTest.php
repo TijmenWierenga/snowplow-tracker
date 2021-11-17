@@ -22,6 +22,8 @@ use TijmenWierenga\SnowplowTracker\Tracker;
 
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
+ *
+ * @psalm-suppress MixedArrayAccess, MixedArgument, MixedAssignment
  */
 final class TrackerTest extends TestCase
 {
@@ -40,13 +42,27 @@ final class TrackerTest extends TestCase
         $tracker = new Tracker($emitter);
 
         // When I track a structured event
-        $tracker->track(new StructuredEvent('my-category', 'my-action'));
+        $tracker->track(new StructuredEvent(
+            'my-category',
+            'my-action',
+            'my-label',
+            'my-property',
+            1
+        ));
 
         // Then I expect the event to be successfully inserted
         self::assertEquals(1, $this->getGoodEventsCount());
+
+        $event = $this->getLatestEvent();
+
+        self::assertEquals('my-category', $event['se_category']);
+        self::assertEquals('my-action', $event['se_action']);
+        self::assertEquals('my-label', $event['se_label']);
+        self::assertEquals('my-property', $event['se_property']);
+        self::assertEquals(1, $event['se_value']);
     }
 
-    public function testItShouldTrackAStructuredEvent(): void
+    public function testItShouldTrackAnUnstructuredEvent(): void
     {
         // Given I have a tracker
         $httpClient = $this->getSnowplowMicroClient();
@@ -69,6 +85,17 @@ final class TrackerTest extends TestCase
 
         // Then I expect the event to be successfully inserted
         self::assertEquals(1, $this->getGoodEventsCount());
+
+        $event = $this->getLatestEvent();
+
+        self::assertEquals(
+            'iglu:com.snowplowanalytics.snowplow/ad_impression/jsonschema/1-0-0',
+            $event['unstruct_event']['data']['schema']
+        );
+        self::assertEquals(
+            '105',
+            $event['unstruct_event']['data']['data']['impressionId']
+        );
     }
 
     public function testItShouldTrackAPageview(): void
@@ -89,6 +116,12 @@ final class TrackerTest extends TestCase
 
         // Then I expect the event to be inserted successfully
         self::assertEquals(1, $this->getGoodEventsCount());
+
+        $event = $this->getLatestEvent();
+
+        self::assertEquals('https://github.com/TijmenWierenga', $event['page_url']);
+        self::assertEquals('My personal Github account', $event['page_title']);
+        self::assertEquals('https://twitter.com/TijmenWierenga', $event['page_referrer']);
     }
 
     public function testItShouldTrackAPagePing(): void
@@ -103,6 +136,13 @@ final class TrackerTest extends TestCase
 
         // Then I expect the event to be inserted successfully
         self::assertEquals(1, $this->getGoodEventsCount());
+
+        $event = $this->getLatestEvent();
+
+        self::assertEquals(0, $event['pp_xoffset_min']);
+        self::assertEquals(100, $event['pp_xoffset_max']);
+        self::assertEquals(50, $event['pp_yoffset_min']);
+        self::assertEquals(250, $event['pp_yoffset_max']);
     }
 
     public function testItShouldTrackAnEcommerceTransaction(): void
@@ -127,6 +167,17 @@ final class TrackerTest extends TestCase
 
         // Then I expect the event to be inserted successfully
         self::assertEquals(1, $this->getGoodEventsCount());
+
+        $event = $this->getLatestEvent();
+
+        self::assertEquals('6d69fc0c-8144-4a9e-a503-88da693f17a3', $event['tr_orderid']);
+        self::assertEquals('My Affiliation', $event['tr_affiliation']);
+        self::assertEquals(89.95, $event['tr_total']);
+        self::assertEquals(3.50, $event['tr_tax']);
+        self::assertEquals(4.95, $event['tr_shipping']);
+        self::assertEquals('Amsterdam', $event['tr_city']);
+        self::assertEquals('Noord-Holland', $event['tr_state']);
+        self::assertEquals('Netherlands', $event['tr_country']);
     }
 
     public function testItShouldTrackATransactionItem(): void
@@ -149,6 +200,15 @@ final class TrackerTest extends TestCase
 
         // Then I expect the event to be inserted successfully
         self::assertEquals(1, $this->getGoodEventsCount());
+
+        $event = $this->getLatestEvent();
+
+        self::assertEquals('6d69fc0c-8144-4a9e-a503-88da693f17a3', $event['ti_orderid']);
+        self::assertEquals('580b9f55-f8d0-405a-93d4-56b4bf64d76b', $event['ti_sku']);
+        self::assertEquals('Apple iPhone 13', $event['ti_name']);
+        self::assertEquals('Smartphones', $event['ti_category']);
+        self::assertEquals(50.05, $event['ti_price']);
+        self::assertEquals(4, $event['ti_quantity']);
     }
 
     public function testItShouldBePassedToMiddleware(): void
@@ -211,5 +271,21 @@ final class TrackerTest extends TestCase
 
         // Then I expect the event to be inserted successfully
         self::assertEquals(1, $this->getGoodEventsCount());
+
+        $event = $this->getLatestEvent();
+        $contexts = $event['contexts']['data'];
+
+        self::assertCount(1, $contexts);
+        self::assertContains(
+            [
+                'schema' => 'iglu:com.snowplowanalytics.snowplow/timing/jsonschema/1-0-0',
+                'data' => [
+                    'category' => 'demo',
+                    'variable' => 'duration',
+                    'timing' => 145
+                ]
+            ],
+            $contexts
+        );
     }
 }
