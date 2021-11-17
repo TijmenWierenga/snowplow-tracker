@@ -6,8 +6,6 @@ namespace TijmenWierenga\Tests\SnowplowTrackers;
 
 use JsonSerializable;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use TijmenWierenga\SnowplowTracker\Emitters\DebugEmitter;
 use TijmenWierenga\SnowplowTracker\Emitters\HttpClientEmitter;
 use TijmenWierenga\SnowplowTracker\Events\EcommerceTransaction;
@@ -27,15 +25,17 @@ use TijmenWierenga\SnowplowTracker\Tracker;
  */
 final class TrackerTest extends TestCase
 {
+    use SnowplowMicroTestingUtils;
+
     protected function setUp(): void
     {
-        $this->createSnowplowMicroClient()->request('GET', '/micro/reset');
+        $this->resetEvents();
     }
 
     public function testItShouldEmitAStructuredEvent(): void
     {
         // Given I have a tracker
-        $httpClient = $this->createSnowplowMicroClient();
+        $httpClient = $this->getSnowplowMicroClient();
         $emitter = new HttpClientEmitter($httpClient);
         $tracker = new Tracker($emitter);
 
@@ -43,21 +43,13 @@ final class TrackerTest extends TestCase
         $tracker->track(new StructuredEvent('my-category', 'my-action'));
 
         // Then I expect the event to be successfully inserted
-        /** @var array{good: int, bad: int, all: int} $events */
-        $events = json_decode(
-            $httpClient->request('GET', '/micro/all')->getContent(true),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-
-        self::assertEquals(1, $events['good']);
+        self::assertEquals(1, $this->getGoodEventsCount());
     }
 
     public function testItShouldTrackAStructuredEvent(): void
     {
         // Given I have a tracker
-        $httpClient = $this->createSnowplowMicroClient();
+        $httpClient = $this->getSnowplowMicroClient();
         $emitter = new HttpClientEmitter($httpClient);
         $tracker = new Tracker($emitter);
 
@@ -76,21 +68,13 @@ final class TrackerTest extends TestCase
         );
 
         // Then I expect the event to be successfully inserted
-        /** @var array{good: int, bad: int, all: int} $events */
-        $events = json_decode(
-            $httpClient->request('GET', '/micro/all')->getContent(true),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-
-        self::assertEquals(1, $events['good']);
+        self::assertEquals(1, $this->getGoodEventsCount());
     }
 
     public function testItShouldTrackAPageview(): void
     {
         // Given I have a tracker
-        $httpClient = $this->createSnowplowMicroClient();
+        $httpClient = $this->getSnowplowMicroClient();
         $emitter = new HttpClientEmitter($httpClient);
         $tracker = new Tracker($emitter);
 
@@ -104,21 +88,13 @@ final class TrackerTest extends TestCase
         );
 
         // Then I expect the event to be inserted successfully
-        /** @var array{good: int, bad: int, all: int} $events */
-        $events = json_decode(
-            $httpClient->request('GET', '/micro/all')->getContent(true),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-
-        self::assertEquals(1, $events['good']);
+        self::assertEquals(1, $this->getGoodEventsCount());
     }
 
     public function testItShouldTrackAPagePing(): void
     {
         // Given I have a tracker
-        $httpClient = $this->createSnowplowMicroClient();
+        $httpClient = $this->getSnowplowMicroClient();
         $emitter = new HttpClientEmitter($httpClient);
         $tracker = new Tracker($emitter);
 
@@ -126,21 +102,13 @@ final class TrackerTest extends TestCase
         $tracker->track(new PagePing(0, 100, 50, 250));
 
         // Then I expect the event to be inserted successfully
-        /** @var array{good: int, bad: int, all: int} $events */
-        $events = json_decode(
-            $httpClient->request('GET', '/micro/all')->getContent(true),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-
-        self::assertEquals(1, $events['good']);
+        self::assertEquals(1, $this->getGoodEventsCount());
     }
 
     public function testItShouldTrackAnEcommerceTransaction(): void
     {
         // Given I have a tracker
-        $httpClient = $this->createSnowplowMicroClient();
+        $httpClient = $this->getSnowplowMicroClient();
         $emitter = new HttpClientEmitter($httpClient);
         $tracker = new Tracker($emitter);
 
@@ -158,21 +126,13 @@ final class TrackerTest extends TestCase
         ));
 
         // Then I expect the event to be inserted successfully
-        /** @var array{good: int, bad: int, all: int} $events */
-        $events = json_decode(
-            $httpClient->request('GET', '/micro/all')->getContent(true),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-
-        self::assertEquals(1, $events['good']);
+        self::assertEquals(1, $this->getGoodEventsCount());
     }
 
     public function testItShouldTrackATransactionItem(): void
     {
         // Given I have a tracker
-        $httpClient = $this->createSnowplowMicroClient();
+        $httpClient = $this->getSnowplowMicroClient();
         $emitter = new HttpClientEmitter($httpClient);
         $tracker = new Tracker($emitter);
 
@@ -188,15 +148,7 @@ final class TrackerTest extends TestCase
         ));
 
         // Then I expect the event to be inserted successfully
-        /** @var array{good: int, bad: int, all: int} $events */
-        $events = json_decode(
-            $httpClient->request('GET', '/micro/all')->getContent(true),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-
-        self::assertEquals(1, $events['good']);
+        self::assertEquals(1, $this->getGoodEventsCount());
     }
 
     public function testItShouldBePassedToMiddleware(): void
@@ -232,7 +184,7 @@ final class TrackerTest extends TestCase
     public function testItShouldAddCustomContext(): void
     {
         // Given I have a tracker
-        $httpClient = $this->createSnowplowMicroClient();
+        $httpClient = $this->getSnowplowMicroClient();
         $emitter = new HttpClientEmitter($httpClient);
         $tracker = new Tracker($emitter);
 
@@ -258,19 +210,6 @@ final class TrackerTest extends TestCase
         $tracker->track($event);
 
         // Then I expect the event to be inserted successfully
-        /** @var array{good: int, bad: int, all: int} $events */
-        $events = json_decode(
-            $httpClient->request('GET', '/micro/all')->getContent(true),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-
-        self::assertEquals(1, $events['good']);
-    }
-
-    private function createSnowplowMicroClient(): HttpClientInterface
-    {
-        return HttpClient::createForBaseUri('http://snowplow_micro:9090');
+        self::assertEquals(1, $this->getGoodEventsCount());
     }
 }
