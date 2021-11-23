@@ -309,6 +309,9 @@ final class TrackerTest extends TestCase
         self::assertEquals(1, $this->getGoodEventsCount());
     }
 
+    /**
+     * @return iterable<array-key, array<array-key, Event>>
+     */
     public function propertyDataProvider(): iterable
     {
         $createEvent = static function (string $property, mixed $value): Event {
