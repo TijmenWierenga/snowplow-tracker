@@ -3,7 +3,7 @@ name: run-tests
 on: push
 
 jobs:
-  code-style:
+  phpunit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -29,3 +29,18 @@ jobs:
         run: sleep 5
       - name: Run tests
         run: docker-compose run --rm php vendor/bin/phpunit
+  psalm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update apt
+        run: sudo apt-get update --fix-missing
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1.0RC6
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction
+      - name: Start stack
+        run: vendor/bin/psalm
