@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TijmenWierenga\Tests\SnowplowTrackers;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 use TijmenWierenga\SnowplowTracker\Emitters\DebugEmitter;
@@ -16,6 +18,7 @@ use TijmenWierenga\SnowplowTracker\Events\Schemable;
 use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
 use TijmenWierenga\SnowplowTracker\Events\TransactionItem;
 use TijmenWierenga\SnowplowTracker\Events\UnstructuredEvent;
+use TijmenWierenga\SnowplowTracker\Events\ValueObjects\ScreenDimensions;
 use TijmenWierenga\SnowplowTracker\Schemas\Schema;
 use TijmenWierenga\SnowplowTracker\Schemas\Version;
 use TijmenWierenga\SnowplowTracker\Tracker;
@@ -23,7 +26,7 @@ use TijmenWierenga\SnowplowTracker\Tracker;
 /**
  * @author Tijmen Wierenga <t.wierenga@live.nl>
  *
- * @psalm-suppress MixedArrayAccess, MixedArgument, MixedAssignment
+ * @psalm-suppress MixedArrayAccess, MixedArgument, MixedAssignment, MixedInferredReturnType
  */
 final class TrackerTest extends TestCase
 {
@@ -287,5 +290,68 @@ final class TrackerTest extends TestCase
             ],
             $contexts
         );
+    }
+
+    /**
+     * @dataProvider propertyDataProvider
+     */
+    public function testProtocol(Event $event): void
+    {
+        // Given I have a tracker
+        $httpClient = $this->getSnowplowMicroClient();
+        $emitter = new HttpClientEmitter($httpClient);
+        $tracker = new Tracker($emitter);
+
+        // When a structured event is tracked with a specific property
+        $tracker->track($event);
+
+        // Then the event should be registered correctly
+        self::assertEquals(1, $this->getGoodEventsCount());
+    }
+
+    public function propertyDataProvider(): iterable
+    {
+        $createEvent = static function (string $property, mixed $value): Event {
+            $event = new StructuredEvent('my-category', 'my-action');
+            $event->{$property} = $value;
+
+            return $event;
+        };
+
+        yield [$createEvent('screenDimensions', new ScreenDimensions(1200, 800))];
+
+        yield [$createEvent('macAddress', 'F3-C2-DB-4C-39-3B')];
+
+        yield [$createEvent('occuredAtClientDevice', new DateTimeImmutable())];
+        yield [$createEvent('occuredAt', new DateTimeImmutable())];
+        yield [$createEvent('timezone', new DateTimeZone('Europe/London'))];
+
+        yield [$createEvent('domainUserId', '41b2905a-2874-4f2e-9be3-ae26476be536')];
+        yield [$createEvent('networkUserId', '41b2905a-2874-4f2e-9be3-ae26476be536')];
+        yield [$createEvent('userId', '41b2905a-2874-4f2e-9be3-ae26476be536')];
+        yield [$createEvent('ipAddress', '127.0.0.1')];
+        yield [$createEvent('sessionId', '92e33bbb-76ae-4afc-869b-3e721fcc9370')];
+        yield [$createEvent('sessionIdIndex', 3)];
+
+        yield [$createEvent('url', 'https://twitter.com/TijmenWierenga')];
+        yield [$createEvent('userAgent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0')];
+        yield [$createEvent('pageTitle', 'Tijmen Wierenga')];
+        yield [$createEvent('referrer', 'https://github.com/TijmenWierenga')];
+        yield [$createEvent('userFingerPrint', 4048966212)];
+        yield [$createEvent('permitsCookies', true)];
+        yield [$createEvent('browserLanguage', 'en-US')];
+        yield [$createEvent('adobePdfPluginInstalled', true)];
+        yield [$createEvent('quicktimePluginInstalled', true)];
+        yield [$createEvent('realplayerInstalled', true)];
+        yield [$createEvent('windowsMediaPluginInstalled', true)];
+        yield [$createEvent('directorPluginInstalled', true)];
+        yield [$createEvent('flashPluginInstalled', true)];
+        yield [$createEvent('javaPluginInstalled', true)];
+        yield [$createEvent('googleGearsPluginInstalled', true)];
+        yield [$createEvent('silverlightPluginInstalled', true)];
+        yield [$createEvent('browserColorDept', 2048)];
+        yield [$createEvent('webPageDimensions', new ScreenDimensions(1024, 812))];
+        yield [$createEvent('characterEncoding', 'utf-8')];
+        yield [$createEvent('browserViewportDimensions', new ScreenDimensions(1024, 812))];
     }
 }
