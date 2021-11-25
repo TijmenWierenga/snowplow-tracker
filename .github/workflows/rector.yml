@@ -44,10 +44,10 @@ jobs:
           if: steps.rector-git-check.outputs.modified == 'true'
           run: git commit -am "[rector] ${COMMIT_MESSAGE}"
 
-      ## Now, there might be coding standard issues after running Rector
-#      -
-#        if: steps.rector-git-check.outputs.modified == 'true'
-#        run: vendor/bin/ecs check src --fix
+      # Now, there might be coding standard issues after running Rector
+      -
+        if: steps.rector-git-check.outputs.modified == 'true'
+        run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix
 
       -
         name: Check for CS modified files
