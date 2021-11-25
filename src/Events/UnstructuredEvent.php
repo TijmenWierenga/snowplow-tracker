@@ -17,8 +17,7 @@ final class UnstructuredEvent extends Event
         public readonly Schema $schema,
         public array|string|int|float|bool|JsonSerializable $data,
         ?UuidInterface $id = null
-    )
-    {
+    ) {
         parent::__construct($id);
     }
 

@@ -58,7 +58,7 @@ final class Payload implements JsonSerializable
                 'tnuid' => $this->event->networkUserId,
                 'uid' => $this->event->userId,
                 'sid' => $this->event->sessionId,
-                'vid' => is_numeric($this->event->sessionIdIndex) ? (string) $this->event->sessionIdIndex: null,
+                'vid' => is_numeric($this->event->sessionIdIndex) ? (string) $this->event->sessionIdIndex : null,
                 'ip' => $this->event->ipAddress,
 
                 // Device parameters
