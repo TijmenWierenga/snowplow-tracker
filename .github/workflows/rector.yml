@@ -37,7 +37,7 @@ jobs:
           if: steps.rector-git-check.outputs.modified == 'true'
           run: |
             git config --global user.name 'rector-bot'
-            git config --global user.email 't.wierenga@live.nl'
+            git config --global user.email 'action@github.com'
             echo "COMMIT_MESSAGE=$(git log -1 --pretty=format:"%s")" >> $GITHUB_ENV
 
       -   name: Commit Rector changes

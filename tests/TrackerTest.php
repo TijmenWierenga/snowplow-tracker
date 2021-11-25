@@ -40,8 +40,7 @@ final class TrackerTest extends TestCase
     public function testItShouldEmitAStructuredEvent(): void
     {
         // Given I have a tracker
-        $httpClient = $this->getSnowplowMicroClient();
-        $emitter = new HttpClientEmitter($httpClient);
+        $emitter = new HttpClientEmitter($this->getSnowplowMicroBaseUri());
         $tracker = new Tracker($emitter);
 
         // When I track a structured event
@@ -68,8 +67,7 @@ final class TrackerTest extends TestCase
     public function testItShouldTrackAnUnstructuredEvent(): void
     {
         // Given I have a tracker
-        $httpClient = $this->getSnowplowMicroClient();
-        $emitter = new HttpClientEmitter($httpClient);
+        $emitter = new HttpClientEmitter($this->getSnowplowMicroBaseUri());
         $tracker = new Tracker($emitter);
 
         // When I track a structured event
@@ -104,8 +102,7 @@ final class TrackerTest extends TestCase
     public function testItShouldTrackAPageview(): void
     {
         // Given I have a tracker
-        $httpClient = $this->getSnowplowMicroClient();
-        $emitter = new HttpClientEmitter($httpClient);
+        $emitter = new HttpClientEmitter($this->getSnowplowMicroBaseUri());
         $tracker = new Tracker($emitter);
 
         // When I track a pageview
@@ -130,8 +127,7 @@ final class TrackerTest extends TestCase
     public function testItShouldTrackAPagePing(): void
     {
         // Given I have a tracker
-        $httpClient = $this->getSnowplowMicroClient();
-        $emitter = new HttpClientEmitter($httpClient);
+        $emitter = new HttpClientEmitter($this->getSnowplowMicroBaseUri());
         $tracker = new Tracker($emitter);
 
         // When I track a pageview
@@ -151,8 +147,7 @@ final class TrackerTest extends TestCase
     public function testItShouldTrackAnEcommerceTransaction(): void
     {
         // Given I have a tracker
-        $httpClient = $this->getSnowplowMicroClient();
-        $emitter = new HttpClientEmitter($httpClient);
+        $emitter = new HttpClientEmitter($this->getSnowplowMicroBaseUri());
         $tracker = new Tracker($emitter);
 
         // When I track an Ecommerce transaction
@@ -186,8 +181,7 @@ final class TrackerTest extends TestCase
     public function testItShouldTrackATransactionItem(): void
     {
         // Given I have a tracker
-        $httpClient = $this->getSnowplowMicroClient();
-        $emitter = new HttpClientEmitter($httpClient);
+        $emitter = new HttpClientEmitter($this->getSnowplowMicroBaseUri());
         $tracker = new Tracker($emitter);
 
         // When I track an Ecommerce transaction
@@ -247,8 +241,7 @@ final class TrackerTest extends TestCase
     public function testItShouldAddCustomContext(): void
     {
         // Given I have a tracker
-        $httpClient = $this->getSnowplowMicroClient();
-        $emitter = new HttpClientEmitter($httpClient);
+        $emitter = new HttpClientEmitter($this->getSnowplowMicroBaseUri());
         $tracker = new Tracker($emitter);
 
         // When I track an event with custom context
@@ -298,8 +291,7 @@ final class TrackerTest extends TestCase
     public function testProtocol(Event $event): void
     {
         // Given I have a tracker
-        $httpClient = $this->getSnowplowMicroClient();
-        $emitter = new HttpClientEmitter($httpClient);
+        $emitter = new HttpClientEmitter($this->getSnowplowMicroBaseUri());
         $tracker = new Tracker($emitter);
 
         // When a structured event is tracked with a specific property
