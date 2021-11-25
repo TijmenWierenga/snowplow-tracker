@@ -1,3 +1,5 @@
+[![Latest Stable Version](http://poser.pugx.org/tijmenwierenga/snowplow-tracker/v)](https://packagist.org/packages/tijmenwierenga/snowplow-tracker) [![Total Downloads](http://poser.pugx.org/tijmenwierenga/snowplow-tracker/downloads)](https://packagist.org/packages/tijmenwierenga/snowplow-tracker) [![Latest Unstable Version](http://poser.pugx.org/tijmenwierenga/snowplow-tracker/v/unstable)](https://packagist.org/packages/tijmenwierenga/snowplow-tracker) [![License](http://poser.pugx.org/tijmenwierenga/snowplow-tracker/license)](https://packagist.org/packages/tijmenwierenga/snowplow-tracker) [![PHP Version Require](http://poser.pugx.org/tijmenwierenga/snowplow-tracker/require/php)](https://packagist.org/packages/tijmenwierenga/snowplow-tracker)
+
 # Snowplow Tracker
 An alternative to the original Snowplow Tracker.
 
