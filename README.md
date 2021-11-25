@@ -21,14 +21,10 @@ The Snowplow Tracker is instantiable by providing an emitter and optional additi
 
 declare(strict_types=1);
 
-use Symfony\Component\HttpClient\HttpClient;
-use TijmenWierenga\SnowplowTracker\{
-    Emitters\HttpClientEmitter,
-    Tracker
-};
+use TijmenWierenga\SnowplowTracker\Tracker;
+use TijmenWierenga\SnowplowTracker\Emitters\HttpClientEmitter;
 
-$httpClient = HttpClient::createForBaseUri('https://your-collector-uri');
-$emitter = new HttpClientEmitter($httpClient)
+$emitter = new HttpClientEmitter('https://your-collector-uri')
 $tracker = new Tracker($emitter)
 ```
 

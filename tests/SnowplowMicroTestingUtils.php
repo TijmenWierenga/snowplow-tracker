@@ -4,21 +4,23 @@ declare(strict_types=1);
 
 namespace TijmenWierenga\Tests\SnowplowTrackers;
 
+use Nyholm\Psr7\Request;
+use Psr\Http\Client\ClientInterface;
 use RuntimeException;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpClient\Psr18Client;
 
 /**
  * @author Tijmen Wierenga <tijmen.wierenga@persgroep.net>
  */
 trait SnowplowMicroTestingUtils
 {
-    private static ?HttpClientInterface $httpClient = null;
+    private static ?ClientInterface $httpClient = null;
 
-    private function getSnowplowMicroClient(): HttpClientInterface
+    private function getSnowplowMicroClient(): ClientInterface
     {
         if (! self::$httpClient) {
-            self::$httpClient = HttpClient::createForBaseUri('http://snowplow_micro:9090');
+            self::$httpClient = new Psr18Client(HttpClient::createForBaseUri($this->getSnowplowMicroBaseUri()));
         }
 
         return self::$httpClient;
@@ -26,7 +28,7 @@ trait SnowplowMicroTestingUtils
 
     private function resetEvents(): void
     {
-        $this->getSnowplowMicroClient()->request('GET', 'micro/reset');
+        $this->getSnowplowMicroClient()->sendRequest(new Request('GET', '/micro/reset'));
     }
 
     private function getGoodEventsCount(): int
@@ -41,7 +43,7 @@ trait SnowplowMicroTestingUtils
     {
         /** @var array{good: int, bad: int, all: int} $result */
         $result = json_decode(
-            $this->getSnowplowMicroClient()->request('GET', '/micro/all')->getContent(true),
+            (string) $this->getSnowplowMicroClient()->sendRequest(new Request('GET', '/micro/all'))->getBody(),
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -54,7 +56,7 @@ trait SnowplowMicroTestingUtils
     {
         /** @var array<int, array{event: array<string, mixed>}> $result */
         $result = json_decode(
-            $this->getSnowplowMicroClient()->request('GET', '/micro/good')->getContent(true),
+            (string) $this->getSnowplowMicroClient()->sendRequest(new Request('GET', '/micro/good'))->getBody(),
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -65,5 +67,10 @@ trait SnowplowMicroTestingUtils
         }
 
         return $result[array_key_first($result)]['event'];
+    }
+
+    private function getSnowplowMicroBaseUri(): string
+    {
+        return 'http://snowplow_micro:9090';
     }
 }
