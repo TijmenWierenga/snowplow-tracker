@@ -29,6 +29,8 @@ jobs:
         run: sleep 5
       - name: Run tests
         run: docker-compose run --rm php vendor/bin/phpunit
+      - name: Run mutation tests
+        run: docker-compose run --rm php phpdbg -qrr vendor/bin/infection
   psalm:
     runs-on: ubuntu-latest
     steps:
