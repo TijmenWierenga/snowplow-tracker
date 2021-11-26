@@ -19,6 +19,7 @@ composer require tijmenwierenga/snowplow-tracker
 The Snowplow Tracker is instantiable by providing an emitter and optionally additional configuration.
 Currently, only a single emitter is available: the `HttpClientEmitter`.
 
+### HttpClientEmitter
 The `HttpClientEmitter` sends the payload to a collector over HTTP.
 If you want to use this emitter a [PSR-7](https://www.php-fig.org/psr/psr-7/), [PSR-17](https://www.php-fig.org/psr/psr-17/) and [PSR-18](https://www.php-fig.org/psr/psr-18/) compliant implementation needs to be installed.
 
@@ -62,6 +63,26 @@ $httpClient = new Psr18Client();
 // Pass it to the emitter
 $emitter = new HttpClientEmitter('https://your-collector-uri', $httpClient);
 $tracker = new Tracker($emitter);
+```
+
+### Tracker configuration
+In order to customize the tracker's configuration you can pass an additional configuration object:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use TijmenWierenga\SnowplowTracker\Tracker;
+use TijmenWierenga\SnowplowTracker\Config\Platform;
+use TijmenWierenga\SnowplowTracker\Config\TrackerConfig;
+
+$config = new TrackerConfig(
+    Platform::WEB, // The platform you're sending events from
+    'My Tracker Name', // The name of your tracker
+    'my-app-id' // A unique identifier for your app
+);
+$tracker = new Tracker(config: $config);
 ```
 
 ## Usage
