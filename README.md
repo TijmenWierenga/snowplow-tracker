@@ -191,3 +191,84 @@ $tracker->track(new UnstructuredEvent(
     ]
 ));
 ```
+
+### The Snowplow Tracker protocol
+All events extend from a base event class which implements all properties currently available in the [Snowplow Tracker Protocol](https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/snowplow-tracker-protocol/).
+These properties are publicly available in every event.
+The example below shows how to add a `userId` to an event to identify a user:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use TijmenWierenga\SnowplowTracker\Events\Pageview;
+
+$pageviewEvent = new Pageview('https://github.com/TijmenWierenga');
+
+$pageviewEvent->userId = 'TijmenWierenga';
+```
+
+### Custom context
+Sometimes you want to add additional context to an event.
+Custom contexts are self-describing JSON schema's which can be implemented by creating a class that implements `TijmenWierenga\SnowplowTracker\Events\Schemable`.
+The example below shows an implementation of the existing [Timing JSON Schema](https://github.com/snowplow/iglu-central/blob/master/schemas/com.snowplowanalytics.snowplow/timing/jsonschema/1-0-0) as defined by Snowplow Analytics.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use TijmenWierenga\SnowplowTracker\Events\Schemable;
+use TijmenWierenga\SnowplowTracker\Schemas\Schema;
+use TijmenWierenga\SnowplowTracker\Schemas\Version;
+
+final class Timing implements Schemable
+{
+    public function __construct(
+        private readonly string $category,
+        private readonly string $variable,
+        private readonly int $timing,
+        private readonly ?string $label = null
+    ) {
+    }
+    
+    public function getSchema(): Schema
+    {
+        return new Schema(
+            'com.snowplowanalytics.snowplow',
+            'timing',
+            new Version(1, 0, 0)
+        );
+    }
+    
+    public function getData(): array|string|int|float|bool|JsonSerializable
+    {
+        return array_filter([
+            'category' => $this->category,
+            'variable' => $this->variable,
+            'timing' => $this->timing,
+            'label' => $this->label
+        ]);
+    } 
+}
+```
+
+As an example, let's include context about the page load in a pageview event:
+```php
+<?php
+
+declare(strict_types=1);
+
+use TijmenWierenga\SnowplowTracker\Events\Pageview;
+
+$pageviewEvent = new Pageview('https://github.com/TijmenWierenga');
+
+$pageLoad = new Timing(
+    'pageLoad',
+    'ms',
+    21
+);
+
+$pageviewEvent->addContext($pageLoad);
+```
