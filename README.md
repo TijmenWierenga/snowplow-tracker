@@ -272,3 +272,52 @@ $pageLoad = new Timing(
 
 $pageviewEvent->addContext($pageLoad);
 ```
+
+### Middleware
+Middlewares provides a way to act on events that are tracked.
+Every piece of middleware is a callable that receives the event as an argument and must return the (modified) event to the next piece of middleware:
+
+```php
+callable(Event $event): Event
+```
+
+This is incredibly useful when you want to add contextual information to every event.
+As an example, middleware is added that adds the `userId` of the currently authenticated user to the event.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use TijmenWierenga\SnowplowTracker\Events\Event;
+use TijmenWierenga\SnowplowTracker\Events\Pageview;
+use TijmenWierenga\SnowplowTracker\Events\StructuredEvent;
+use TijmenWierenga\SnowplowTracker\Tracker;
+
+final class AddUserIdMiddleware
+{
+    public function __construct(
+        private readonly AuthenticatedUserIdProvider $userIdProvider
+    ) {
+    }
+    
+    public function __invoke(Event $event): Event
+    {
+        $event->userId = $this->userIdProvider->getUserId();
+        
+        return $event;
+    }
+}
+
+$addUserIdMiddleware = new AddUserIdMiddleware(/** ... */);
+
+$tracker = new Tracker(middleware: [$addUserIdMiddleware]);
+
+$pageviewEvent = new Pageview('https://github.com/TijmenWierenga');
+$structuredEvent = new StructuredEvent('my-category', 'my-action');
+
+$tracker->track($pageviewEvent);
+$tracker->track($structuredEvent);
+```
+
+In the example above both events will now have a `userId` attached.
