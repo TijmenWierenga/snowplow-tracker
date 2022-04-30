@@ -37,5 +37,10 @@
             "name": "Tijmen Wierenga",
             "email": "t.wierenga@live.nl"
         }
-    ]
+    ],
+    "config": {
+        "allow-plugins": {
+            "infection/extension-installer": true
+        }
+    }
 }

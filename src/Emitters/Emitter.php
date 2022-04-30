@@ -11,5 +11,8 @@ namespace TijmenWierenga\SnowplowTracker\Emitters;
  */
 interface Emitter
 {
+    /**
+     * @throws FailedToEmit Thrown when the payload could not be sent
+     */
     public function send(Payload $payload): void;
 }

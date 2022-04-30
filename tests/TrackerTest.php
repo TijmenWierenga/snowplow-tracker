@@ -9,7 +9,11 @@ use DateTimeZone;
 use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 use TijmenWierenga\SnowplowTracker\Emitters\DebugEmitter;
+use TijmenWierenga\SnowplowTracker\Emitters\Emitter;
+use TijmenWierenga\SnowplowTracker\Emitters\FailedToEmit;
+use TijmenWierenga\SnowplowTracker\Emitters\FallbackStrategy;
 use TijmenWierenga\SnowplowTracker\Emitters\HttpClientEmitter;
+use TijmenWierenga\SnowplowTracker\Emitters\Payload;
 use TijmenWierenga\SnowplowTracker\Events\EcommerceTransaction;
 use TijmenWierenga\SnowplowTracker\Events\Event;
 use TijmenWierenga\SnowplowTracker\Events\PagePing;
@@ -236,6 +240,77 @@ final class TrackerTest extends TestCase
         $payload = $emitter->getLatestPayload();
         self::assertEquals('t.wierenga@live.nl', $payload->event->userId);
         self::assertEquals('707ac2fb-b4a8-422b-9f58-41e1fa79ce5a', $payload->event->sessionId);
+    }
+
+    public function testItShouldCallTheFallbackStrategyWhenAnEventFailsToEmit(): void
+    {
+        // Given I have a tracker with a fallback strategy
+        $failingEmitter = new class () implements Emitter {
+            public function send(Payload $payload): void
+            {
+                throw FailedToEmit::withPayload($payload);
+            }
+        };
+        $loggingFallbackStrategy = new class () implements FallbackStrategy {
+            /** @var Payload[] */
+            public array $recoveredPayloads = [];
+
+            public function recover(Payload $payload): void
+            {
+                $this->recoveredPayloads[] = $payload;
+            }
+        };
+        $tracker = new Tracker(
+            $failingEmitter,
+            fallbackStrategy: $loggingFallbackStrategy
+        );
+
+        // When an event fails to be emitted
+        $this->expectException(FailedToEmit::class);
+
+        $event = new StructuredEvent('my-category', 'my-action');
+
+        try {
+            $tracker->track($event);
+        } finally {
+            // Then the payload should be passed to the fallback strategy
+            self::assertCount(1, $loggingFallbackStrategy->recoveredPayloads);
+            self::assertSame($event, $loggingFallbackStrategy->recoveredPayloads[0]->event);
+        }
+    }
+
+    public function testItShouldRecoverWhenAnEventFailsToEmitWithoutAnException(): void
+    {
+        // Given I have a tracker with a fallback strategy
+        $failingEmitter = new class () implements Emitter {
+            public function send(Payload $payload): void
+            {
+                throw FailedToEmit::withPayload($payload);
+            }
+        };
+        $loggingFallbackStrategy = new class () implements FallbackStrategy {
+            /** @var Payload[] */
+            public array $recoveredPayloads = [];
+
+            public function recover(Payload $payload): void
+            {
+                $this->recoveredPayloads[] = $payload;
+            }
+        };
+        $tracker = new Tracker(
+            $failingEmitter,
+            fallbackStrategy: $loggingFallbackStrategy,
+            throwOnError: false
+        );
+
+        // When an event fails to be emitted
+        $event = new StructuredEvent('my-category', 'my-action');
+
+        $tracker->track($event);
+
+        // Then the payload should be passed to the fallback strategy without throwing an exception
+        self::assertCount(1, $loggingFallbackStrategy->recoveredPayloads);
+        self::assertSame($event, $loggingFallbackStrategy->recoveredPayloads[0]->event);
     }
 
     public function testItShouldAddCustomContext(): void
