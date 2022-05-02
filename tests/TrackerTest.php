@@ -267,6 +267,8 @@ final class TrackerTest extends TestCase
 
         // When an event fails to be emitted
         $this->expectException(FailedToEmit::class);
+        $this->expectExceptionMessage('Payload could not be emitted');
+        $this->expectExceptionCode(0);
 
         $event = new StructuredEvent('my-category', 'my-action');
 

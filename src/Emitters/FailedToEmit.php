@@ -16,8 +16,8 @@ final class FailedToEmit extends RuntimeException
     public function __construct(
         public readonly Payload $payload,
         string $message,
-        int $code = 0,
-        ?Throwable $previous = null
+        int $code,
+        ?Throwable $previous
     ) {
         parent::__construct($message, $code, $previous);
     }
