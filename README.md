@@ -85,6 +85,39 @@ $config = new TrackerConfig(
 $tracker = new Tracker(config: $config);
 ```
 
+### Handling failures
+Whenever emitting an event fails, you don't want to lose the data.
+Therefore, a `TijmenWierenga\SnowplowTracker\Emitters\FallbackStrategy` exists in order to help you recover from failures.
+
+The `FallbackStrategy` is called whenever the `TijmenWierenga\SnowplowTracker\Emitters\FailedToEmit` exception is raised.
+By default, a void fallback strategy is used, which means nothing happens when an event failed emitting.
+It's advised to implement an own implementation that stores the failed payloads in order to attempt to send the failed events at a later time.
+
+Configure the fallback strategy as a constructor argument for the `Tracker`:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+$fallbackStrategy = new MyFallbackStrategy();
+$tracker = new Tracker(fallbackStrategy: $fallbackStrategy);
+```
+
+If a `FailedToEmit` exception is raised, the `Tracker` will rethrow the exception after calling the fallback strategy.
+This could potentially lead to client-facing errors which may be undesirable.
+This behaviour can be changed by setting the `$throwOnError` constructor argument for the `Tracker`:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+$tracker = new Tracker(throwOnError: false);
+```
+
+Please note that without a sufficient fallback strategy, ignoring exceptions will lead to data loss without anyone noticing. 
+
 ## Usage
 Tracking events is done by calling the `track()` method on the `Tracker` instance:
 This library implements 6 type of events.
