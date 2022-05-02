@@ -6,6 +6,7 @@ namespace TijmenWierenga\SnowplowTracker\Emitters;
 
 use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18ClientDiscovery;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 
@@ -42,6 +43,10 @@ final class HttpClientEmitter implements Emitter
             JSON_THROW_ON_ERROR
         ));
 
-        $this->httpClient->sendRequest($request);
+        try {
+            $this->httpClient->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
+            throw FailedToEmit::withPayload($payload, previous: $e);
+        }
     }
 }
