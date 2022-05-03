@@ -17,6 +17,7 @@ final class HttpClientEmitter implements Emitter
 {
     private const POST_EVENT_URL = '/com.snowplowanalytics.snowplow/tp2';
     private const CURRENT_JSON_SCHEMA = 'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-4';
+    private const SUCCESSFUL_STATUS_CODES = [200, 201, 204];
 
     private readonly ClientInterface $httpClient;
     private readonly RequestFactoryInterface $requestFactory;
@@ -44,7 +45,11 @@ final class HttpClientEmitter implements Emitter
         ));
 
         try {
-            $this->httpClient->sendRequest($request);
+            $response = $this->httpClient->sendRequest($request);
+
+            if (! in_array($response->getStatusCode(), self::SUCCESSFUL_STATUS_CODES)) {
+                throw FailedToEmit::withPayload($payload);
+            }
         } catch (ClientExceptionInterface $e) {
             throw FailedToEmit::withPayload($payload, previous: $e);
         }
