@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   php:
-    image: php:${PHP_VERSION:-8.1.0RC6}-alpine
+    image: php:${PHP_VERSION:-8.1}-alpine
     restart: 'no'
     volumes:
       - .:/app
